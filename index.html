@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Henny+Penny&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Limelight&display=swap" rel="stylesheet">
     <style>
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-5px); }
@@ -69,9 +69,10 @@
             box-shadow: 2px 0 8px rgba(244, 163, 163, 0.3);
         }
         
-        /* Global font */
+        /* Global font - minimal elegant */
         body {
-            font-family: 'Henny Penny', cursive;
+            font-family: 'Limelight', serif;
+            letter-spacing: 0.5px;
         }
         
         /* Dark mode - True blackish dark */
@@ -195,22 +196,24 @@
 </head>
 <body class="min-h-screen px-4 bg-white text-slate-800 transition-colors duration-300">
     <!-- Top Left: Title -->
-    <div class="fixed top-6 left-6 z-40">
-        <h1 class="text-4xl font-bold text-slate-800 dark-mode:text-slate-100" style="font-family: 'Henny Penny', cursive;">just do list</h1>
+    <div class="fixed top-6 left-6 z-40 flex flex-col gap-0">
+        <h1 class="text-2xl font-bold text-slate-800 dark-mode:text-slate-100 leading-none" style="font-family: 'Limelight', serif;">just</h1>
+        <h1 class="text-2xl font-bold text-slate-800 dark-mode:text-slate-100 leading-none" style="font-family: 'Limelight', serif;">do</h1>
+        <h1 class="text-2xl font-bold text-slate-800 dark-mode:text-slate-100 leading-none" style="font-family: 'Limelight', serif;">list</h1>
     </div>
 
     <!-- Top Right: Theme Buttons -->
     <div class="fixed top-6 right-6 z-40 flex gap-2">
         <button 
             id="themeToggle" 
-            class="px-3 py-2 text-sm bg-slate-200 dark-mode:bg-slate-700 hover:bg-slate-300 dark-mode:hover:bg-slate-600 text-slate-800 dark-mode:text-slate-100 rounded transition"
+            class="px-3 py-2 text-xs bg-slate-200 dark-mode:bg-slate-700 hover:bg-slate-300 dark-mode:hover:bg-slate-600 text-slate-800 dark-mode:text-slate-100 rounded-xl transition"
             title="Toggle dark mode"
         >
             🌙
         </button>
         <button 
             id="textbookToggle" 
-            class="px-3 py-2 text-sm bg-slate-200 dark-mode:bg-slate-700 hover:bg-slate-300 dark-mode:hover:bg-slate-600 text-slate-800 dark-mode:text-slate-100 rounded transition"
+            class="px-3 py-2 text-xs bg-slate-200 dark-mode:bg-slate-700 hover:bg-slate-300 dark-mode:hover:bg-slate-600 text-slate-800 dark-mode:text-slate-100 rounded-xl transition"
             title="Textbook mode"
         >
             📖
@@ -220,49 +223,49 @@
     <!-- Main Content -->
     <div class="max-w-lg mx-auto pt-24 pb-32">
         <!-- Input -->
-        <div class="bg-white dark-mode:bg-slate-800 rounded shadow p-3 mb-4">
+        <div class="bg-white dark-mode:bg-slate-800 rounded-2xl shadow-sm p-4 mb-6">
             <div class="flex gap-2">
                 <input 
                     type="text" 
                     id="taskInput" 
-                    placeholder="Add task..." 
-                    class="flex-1 px-3 py-2 text-sm border border-slate-200 dark-mode:border-slate-700 dark-mode:bg-slate-700 dark-mode:text-slate-100 rounded focus:outline-none focus:border-blue-500 transition"
+                    placeholder="add task..." 
+                    class="flex-1 px-4 py-2 text-sm border border-slate-200 dark-mode:border-slate-700 dark-mode:bg-slate-700 dark-mode:text-slate-100 rounded-xl focus:outline-none focus:border-blue-400 transition"
                     autocomplete="off"
                 >
                 <button 
                     id="addBtn" 
-                    class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded transition"
+                    class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-light px-5 py-2 rounded-xl transition"
                 >
-                    Add
+                    add
                 </button>
             </div>
         </div>
 
         <!-- Tasks -->
-        <div id="taskList" class="space-y-2">
+        <div id="taskList" class="space-y-3">
             <!-- Tasks rendered here -->
         </div>
 
         <!-- Empty -->
-        <div id="emptyState" class="text-center py-8">
-            <p class="text-slate-400 text-sm">No tasks yet</p>
+        <div id="emptyState" class="text-center py-12">
+            <p class="text-slate-300 text-xs tracking-widest uppercase">no tasks yet</p>
         </div>
 
         <!-- Burn Button -->
-        <div id="burnContainer" class="hidden text-center mt-8">
-            <p class="text-sm text-slate-600 dark-mode:text-slate-400 mb-3">All done! ✨</p>
+        <div id="burnContainer" class="hidden text-center mt-12">
+            <p class="text-xs text-slate-500 dark-mode:text-slate-400 mb-4 tracking-wider uppercase">all done</p>
             <button 
                 id="burnBtn" 
-                class="px-6 py-3 bg-gradient-to-r from-orange-400 to-red-500 hover:from-orange-500 hover:to-red-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105 active:scale-95"
+                class="px-8 py-3 bg-gradient-to-r from-orange-400 to-red-500 hover:from-orange-500 hover:to-red-600 text-white text-sm font-light rounded-2xl shadow-sm hover:shadow-md transition"
             >
-                🔥 Burn it all
+                🔥 burn it
             </button>
         </div>
     </div>
 
     <!-- Bottom Disclaimer -->
-    <div id="disclaimer" class="fixed bottom-6 left-6 right-6 max-w-sm p-3 bg-yellow-50 dark-mode:bg-yellow-950 border border-yellow-200 dark-mode:border-yellow-800 rounded text-xs text-yellow-800 dark-mode:text-yellow-200 shadow-lg z-40 flex items-center justify-between" style="font-family: system-ui, -apple-system, sans-serif;">
-        <span>⚠️ Ephemeral todo - closing tab = data lost</span>
+    <div id="disclaimer" class="fixed bottom-6 left-6 right-6 max-w-sm p-3 bg-yellow-50 dark-mode:bg-yellow-950 border border-yellow-200 dark-mode:border-yellow-800 rounded-2xl text-xs text-yellow-800 dark-mode:text-yellow-200 shadow-sm z-40 flex items-center justify-between" style="font-family: system-ui, -apple-system, sans-serif;">
+        <span>⚠️ ephemeral • closing tab = data lost</span>
         <button id="closeDisclaimer" class="ml-2 text-yellow-600 dark-mode:text-yellow-400 hover:text-yellow-800 dark-mode:hover:text-yellow-200 font-bold">✕</button>
     </div>
 
@@ -273,37 +276,37 @@
 
     <!-- Edit Modal -->
     <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white dark-mode:bg-slate-800 rounded shadow-lg p-6 max-w-sm w-full">
-            <h3 class="text-lg font-bold text-slate-800 dark-mode:text-slate-100 mb-4">Edit task</h3>
+        <div class="bg-white dark-mode:bg-slate-800 rounded-3xl shadow-lg p-6 max-w-sm w-full">
+            <h3 class="text-sm font-light text-slate-800 dark-mode:text-slate-100 mb-4 tracking-widest uppercase">Edit</h3>
             <input 
                 type="text" 
                 id="editInput" 
-                class="w-full px-3 py-2 text-sm border border-slate-200 dark-mode:border-slate-700 dark-mode:bg-slate-700 dark-mode:text-slate-100 rounded focus:outline-none focus:border-blue-500 mb-4"
+                class="w-full px-4 py-2 text-sm border border-slate-200 dark-mode:border-slate-700 dark-mode:bg-slate-700 dark-mode:text-slate-100 rounded-xl focus:outline-none focus:border-blue-400 mb-4"
             >
             <div class="flex gap-2">
-                <button id="saveEditBtn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold py-2 rounded transition">Save</button>
-                <button id="cancelEditBtn" class="flex-1 bg-slate-300 dark-mode:bg-slate-600 hover:bg-slate-400 dark-mode:hover:bg-slate-500 text-slate-800 dark-mode:text-slate-100 text-sm font-semibold py-2 rounded transition">Cancel</button>
+                <button id="saveEditBtn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-light py-2 rounded-xl transition">save</button>
+                <button id="cancelEditBtn" class="flex-1 bg-slate-300 dark-mode:bg-slate-600 hover:bg-slate-400 dark-mode:hover:bg-slate-500 text-slate-800 dark-mode:text-slate-100 text-xs font-light py-2 rounded-xl transition">cancel</button>
             </div>
         </div>
     </div>
 
     <!-- Color Palette Modal -->
     <div id="colorModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white dark-mode:bg-slate-800 rounded shadow-lg p-5 max-w-xs w-full">
-            <h3 class="text-sm font-bold text-slate-800 dark-mode:text-slate-100 mb-3">Color</h3>
-            <div class="grid grid-cols-4 gap-2 mb-3">
-                <button data-color="bg-red-100" class="w-10 h-10 bg-red-100 rounded hover:ring-2 ring-offset-2 ring-red-400 transition"></button>
-                <button data-color="bg-blue-100" class="w-10 h-10 bg-blue-100 rounded hover:ring-2 ring-offset-2 ring-blue-400 transition"></button>
-                <button data-color="bg-green-100" class="w-10 h-10 bg-green-100 rounded hover:ring-2 ring-offset-2 ring-green-400 transition"></button>
-                <button data-color="bg-yellow-100" class="w-10 h-10 bg-yellow-100 rounded hover:ring-2 ring-offset-2 ring-yellow-400 transition"></button>
-                <button data-color="bg-purple-100" class="w-10 h-10 bg-purple-100 rounded hover:ring-2 ring-offset-2 ring-purple-400 transition"></button>
-                <button data-color="bg-pink-100" class="w-10 h-10 bg-pink-100 rounded hover:ring-2 ring-offset-2 ring-pink-400 transition"></button>
-                <button data-color="bg-orange-100" class="w-10 h-10 bg-orange-100 rounded hover:ring-2 ring-offset-2 ring-orange-400 transition"></button>
-                <button data-color="bg-cyan-100" class="w-10 h-10 bg-cyan-100 rounded hover:ring-2 ring-offset-2 ring-cyan-400 transition"></button>
+        <div class="bg-white dark-mode:bg-slate-800 rounded-3xl shadow-lg p-5 max-w-xs w-full">
+            <h3 class="text-xs font-light text-slate-800 dark-mode:text-slate-100 mb-4 tracking-widest uppercase">color</h3>
+            <div class="grid grid-cols-4 gap-3 mb-4">
+                <button data-color="bg-red-100" class="w-12 h-12 bg-red-100 rounded-2xl hover:ring-2 ring-offset-2 ring-red-400 transition"></button>
+                <button data-color="bg-blue-100" class="w-12 h-12 bg-blue-100 rounded-2xl hover:ring-2 ring-offset-2 ring-blue-400 transition"></button>
+                <button data-color="bg-green-100" class="w-12 h-12 bg-green-100 rounded-2xl hover:ring-2 ring-offset-2 ring-green-400 transition"></button>
+                <button data-color="bg-yellow-100" class="w-12 h-12 bg-yellow-100 rounded-2xl hover:ring-2 ring-offset-2 ring-yellow-400 transition"></button>
+                <button data-color="bg-purple-100" class="w-12 h-12 bg-purple-100 rounded-2xl hover:ring-2 ring-offset-2 ring-purple-400 transition"></button>
+                <button data-color="bg-pink-100" class="w-12 h-12 bg-pink-100 rounded-2xl hover:ring-2 ring-offset-2 ring-pink-400 transition"></button>
+                <button data-color="bg-orange-100" class="w-12 h-12 bg-orange-100 rounded-2xl hover:ring-2 ring-offset-2 ring-orange-400 transition"></button>
+                <button data-color="bg-cyan-100" class="w-12 h-12 bg-cyan-100 rounded-2xl hover:ring-2 ring-offset-2 ring-cyan-400 transition"></button>
             </div>
             <div class="flex gap-2">
-                <button id="randomColorBtn" class="flex-1 bg-slate-500 hover:bg-slate-600 text-white text-sm font-semibold py-1 rounded transition">Random</button>
-                <button id="cancelColorBtn" class="flex-1 bg-slate-300 hover:bg-slate-400 text-slate-800 text-sm font-semibold py-1 rounded transition">Close</button>
+                <button id="randomColorBtn" class="flex-1 bg-slate-500 hover:bg-slate-600 text-white text-xs font-light py-2 rounded-xl transition">random</button>
+                <button id="cancelColorBtn" class="flex-1 bg-slate-300 hover:bg-slate-400 text-slate-800 text-xs font-light py-2 rounded-xl transition">close</button>
             </div>
         </div>
     </div>
@@ -515,28 +518,28 @@
 
             createTaskElement(task) {
                 return `
-                    <div class="task-item ${task.color} rounded shadow p-3 flex items-center gap-2 group hover:shadow-md transition">
+                    <div class="task-item ${task.color} rounded-2xl shadow-sm p-4 flex items-center gap-3 group hover:shadow-md transition">
                         <button 
-                            class="complete-btn flex-shrink-0 w-5 h-5 rounded border border-slate-400 hover:border-slate-600 transition flex items-center justify-center text-xs ${task.completed ? 'bg-slate-600 border-slate-600' : 'hover:bg-slate-100'}"
+                            class="complete-btn flex-shrink-0 w-5 h-5 rounded-full border border-slate-300 hover:border-slate-500 transition flex items-center justify-center text-xs ${task.completed ? 'bg-slate-600 border-slate-600' : 'hover:bg-slate-100'}"
                             data-id="${task.id}"
                         >
                             ${task.completed ? '✓' : ''}
                         </button>
                         <span 
-                            class="task-title flex-1 text-slate-800 text-sm ${task.completed ? 'task-complete' : ''}"
+                            class="task-title flex-1 text-slate-800 text-sm font-light ${task.completed ? 'task-complete' : ''}"
                             data-id="${task.id}"
                             style="cursor: pointer;"
                         >
                             ${this.escapeHtml(task.title)}
                         </span>
                         <button 
-                            class="color-btn flex-shrink-0 px-2 py-1 bg-white bg-opacity-60 hover:bg-opacity-100 rounded text-xs opacity-0 group-hover:opacity-100 transition"
+                            class="color-btn flex-shrink-0 px-2 py-1 bg-white bg-opacity-60 hover:bg-opacity-100 rounded-xl text-xs opacity-0 group-hover:opacity-100 transition"
                             data-id="${task.id}"
                         >
                             🎨
                         </button>
                         <button 
-                            class="delete-btn flex-shrink-0 px-2 py-1 bg-red-100 hover:bg-red-200 text-red-600 rounded text-xs opacity-0 group-hover:opacity-100 transition"
+                            class="delete-btn flex-shrink-0 px-2 py-1 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl text-xs opacity-0 group-hover:opacity-100 transition"
                             data-id="${task.id}"
                         >
                             ✕
@@ -666,7 +669,7 @@
                                     this.burnBtn.disabled = false;
                                 }, 7000);
                             }, 2000);
-                        }, 3000); // 3 second blank
+                        }, 2000); // 2 second blank
                     }, 1000); // fade out
                 }, 800);
             }
