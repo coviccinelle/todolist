@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Henny+Penny&display=swap" rel="stylesheet">
     <style>
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-5px); }
@@ -12,6 +13,33 @@
         }
         .task-item { animation: fadeIn 0.2s ease-in-out; }
         .task-complete { text-decoration: line-through; opacity: 0.5; }
+        
+        /* Burn animation */
+        @keyframes burn {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(var(--tx)) rotate(var(--rot));
+                opacity: 0;
+            }
+        }
+        @keyframes fadeOutScale {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.5);
+            }
+        }
+        .ash-particle {
+            position: fixed;
+            pointer-events: none;
+            animation: burn 3s ease-out forwards;
+        }
         
         /* Textbook mode - Japanese notebook style */
         body.textbook-mode {
@@ -35,22 +63,33 @@
             box-shadow: 2px 0 8px rgba(244, 163, 163, 0.3);
         }
         
+        /* Global font */
+        body {
+            font-family: 'Henny Penny', cursive;
+        }
+        
         /* Dark mode - True blackish dark */
         body.dark-mode {
             background-color: #0f172a !important;
-            color: #e2e8f0;
+            color: #e2e8f0 !important;
         }
         body.dark-mode .bg-white {
             background-color: #1e293b !important;
         }
         body.dark-mode .text-slate-800 {
-            color: #e2e8f0 !important;
+            color: #f1f5f9 !important;
         }
         body.dark-mode .text-slate-700 {
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode .text-slate-600 {
             color: #cbd5e1 !important;
         }
         body.dark-mode .text-slate-400 {
             color: #94a3b8 !important;
+        }
+        body.dark-mode .text-slate-500 {
+            color: #64748b !important;
         }
         body.dark-mode .border-slate-200 {
             border-color: #334155 !important;
@@ -102,31 +141,52 @@
         body.dark-mode input::placeholder {
             color: #94a3b8 !important;
         }
+        body.dark-mode .bg-yellow-50 {
+            background-color: #1e293b !important;
+        }
+        body.dark-mode .bg-yellow-950 {
+            background-color: #1e293b !important;
+        }
+        body.dark-mode .text-yellow-800 {
+            color: #fef3c7 !important;
+        }
+        body.dark-mode .text-yellow-200 {
+            color: #fcd34d !important;
+        }
+        body.dark-mode .border-yellow-200 {
+            border-color: #fcd34d !important;
+        }
+        body.dark-mode .border-yellow-800 {
+            border-color: #fcd34d !important;
+        }
     </style>
 </head>
-<body class="min-h-screen py-6 px-4 bg-white text-slate-800 transition-colors duration-300">
-    <div class="max-w-lg mx-auto">
-        <!-- Header -->
-        <div class="mb-6 flex items-center justify-between">
-            <h1 class="text-2xl font-bold text-slate-800 dark-mode:text-slate-100">Todo</h1>
-            <div class="flex gap-2">
-                <button 
-                    id="themeToggle" 
-                    class="px-3 py-1 text-xs bg-slate-200 dark-mode:bg-slate-700 hover:bg-slate-300 dark-mode:hover:bg-slate-600 text-slate-800 dark-mode:text-slate-100 rounded transition"
-                    title="Toggle theme"
-                >
-                    🌙
-                </button>
-                <button 
-                    id="textbookToggle" 
-                    class="px-3 py-1 text-xs bg-slate-200 dark-mode:bg-slate-700 hover:bg-slate-300 dark-mode:hover:bg-slate-600 text-slate-800 dark-mode:text-slate-100 rounded transition"
-                    title="Textbook mode"
-                >
-                    📖
-                </button>
-            </div>
-        </div>
+<body class="min-h-screen px-4 bg-white text-slate-800 transition-colors duration-300">
+    <!-- Top Left: Title -->
+    <div class="fixed top-6 left-6 z-40">
+        <h1 class="text-4xl font-bold text-slate-800 dark-mode:text-slate-100" style="font-family: 'Henny Penny', cursive;">Todo</h1>
+    </div>
 
+    <!-- Top Right: Theme Buttons -->
+    <div class="fixed top-6 right-6 z-40 flex gap-2">
+        <button 
+            id="themeToggle" 
+            class="px-3 py-2 text-sm bg-slate-200 dark-mode:bg-slate-700 hover:bg-slate-300 dark-mode:hover:bg-slate-600 text-slate-800 dark-mode:text-slate-100 rounded transition"
+            title="Toggle dark mode"
+        >
+            🌙
+        </button>
+        <button 
+            id="textbookToggle" 
+            class="px-3 py-2 text-sm bg-slate-200 dark-mode:bg-slate-700 hover:bg-slate-300 dark-mode:hover:bg-slate-600 text-slate-800 dark-mode:text-slate-100 rounded transition"
+            title="Textbook mode"
+        >
+            📖
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-lg mx-auto pt-24 pb-32">
         <!-- Input -->
         <div class="bg-white dark-mode:bg-slate-800 rounded shadow p-3 mb-4">
             <div class="flex gap-2">
@@ -155,6 +215,28 @@
         <div id="emptyState" class="text-center py-8">
             <p class="text-slate-400 text-sm">No tasks yet</p>
         </div>
+
+        <!-- Burn Button -->
+        <div id="burnContainer" class="hidden text-center mt-8">
+            <p class="text-sm text-slate-600 dark-mode:text-slate-400 mb-3">All done! ✨</p>
+            <button 
+                id="burnBtn" 
+                class="px-6 py-3 bg-gradient-to-r from-orange-400 to-red-500 hover:from-orange-500 hover:to-red-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105 active:scale-95"
+            >
+                🔥 Burn it all
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Disclaimer -->
+    <div id="disclaimer" class="fixed bottom-6 left-6 right-6 max-w-sm p-3 bg-yellow-50 dark-mode:bg-yellow-950 border border-yellow-200 dark-mode:border-yellow-800 rounded text-xs text-yellow-800 dark-mode:text-yellow-200 shadow-lg z-40 flex items-center justify-between">
+        <span>⚠️ Ephemeral todo - closing tab = data lost</span>
+        <button id="closeDisclaimer" class="ml-2 text-yellow-600 dark-mode:text-yellow-400 hover:text-yellow-800 dark-mode:hover:text-yellow-200 font-bold">✕</button>
+    </div>
+
+    <!-- Burn Animation Overlay -->
+    <div id="burnOverlay" class="hidden fixed inset-0 pointer-events-none z-50">
+        <div id="ashContainer"></div>
     </div>
 
     <!-- Edit Modal -->
@@ -251,6 +333,11 @@
             getTasks() {
                 return this.tasks;
             }
+
+            allTasksComplete() {
+                if (this.tasks.length === 0) return false;
+                return this.tasks.every(task => task.completed);
+            }
         }
 
         class UIManager {
@@ -265,6 +352,12 @@
                 this.editInput = document.getElementById('editInput');
                 this.themeToggle = document.getElementById('themeToggle');
                 this.textbookToggle = document.getElementById('textbookToggle');
+                this.burnContainer = document.getElementById('burnContainer');
+                this.burnBtn = document.getElementById('burnBtn');
+                this.burnOverlay = document.getElementById('burnOverlay');
+                this.disclaimer = document.getElementById('disclaimer');
+                this.closeDisclaimerBtn = document.getElementById('closeDisclaimer');
+                this.isBurned = false;
 
                 this.attachEventListeners();
                 this.loadTheme();
@@ -300,6 +393,9 @@
                 this.editInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') this.saveEdit();
                 });
+
+                this.burnBtn.addEventListener('click', () => this.burnIt());
+                this.closeDisclaimerBtn.addEventListener('click', () => this.disclaimer.classList.add('hidden'));
             }
 
             handleAddTask() {
@@ -368,11 +464,20 @@
                 if (tasks.length === 0) {
                     this.taskList.innerHTML = '';
                     this.emptyState.classList.remove('hidden');
+                    this.burnContainer.classList.add('hidden');
                     return;
                 }
 
                 this.emptyState.classList.add('hidden');
                 this.taskList.innerHTML = tasks.map(task => this.createTaskElement(task)).join('');
+                
+                // Show burn button if all tasks are complete
+                if (this.todo.allTasksComplete()) {
+                    this.burnContainer.classList.remove('hidden');
+                } else {
+                    this.burnContainer.classList.add('hidden');
+                }
+                
                 this.attachTaskEventListeners();
             }
 
@@ -439,6 +544,62 @@
             escapeHtml(text) {
                 const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
                 return text.replace(/[&<>"']/g, m => map[m]);
+            }
+
+            burnIt() {
+                // Prevent multiple burns
+                if (this.isBurned) return;
+                this.isBurned = true;
+                this.burnBtn.disabled = true;
+                this.burnOverlay.classList.remove('hidden');
+                
+                // Create ash particles
+                const container = document.getElementById('ashContainer');
+                const particleCount = 50;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'ash-particle';
+                    
+                    const size = Math.random() * 20 + 5;
+                    const startX = Math.random() * window.innerWidth;
+                    const startY = Math.random() * window.innerHeight;
+                    const tx = (Math.random() - 0.5) * 200;
+                    const rot = Math.random() * 360;
+                    const duration = Math.random() * 1.5 + 2;
+                    
+                    particle.style.left = startX + 'px';
+                    particle.style.top = startY + 'px';
+                    particle.style.width = size + 'px';
+                    particle.style.height = size + 'px';
+                    particle.style.background = `rgba(120, 120, 120, ${Math.random() * 0.8 + 0.2})`;
+                    particle.style.borderRadius = '50%';
+                    particle.style.setProperty('--tx', tx + 'px');
+                    particle.style.setProperty('--rot', rot + 'deg');
+                    particle.style.animationDuration = duration + 's';
+                    
+                    container.appendChild(particle);
+                }
+                
+                // Fade out content and show burn effect
+                setTimeout(() => {
+                    document.body.style.opacity = '0';
+                    document.body.style.transition = 'opacity 2s ease-out';
+                    
+                    setTimeout(() => {
+                        // Clear everything
+                        this.taskList.innerHTML = '';
+                        this.emptyState.classList.remove('hidden');
+                        this.emptyState.innerHTML = '<p class="text-slate-400 text-sm">✨ Everything is ashes now</p>';
+                        this.burnContainer.classList.add('hidden');
+                        this.burnOverlay.classList.add('hidden');
+                        document.body.style.opacity = '1';
+                        document.body.style.transition = 'none';
+                        this.todo.tasks = [];
+                        container.innerHTML = '';
+                        this.isBurned = true; // Keep the burned state
+                    }, 2000);
+                }, 800);
             }
         }
 
