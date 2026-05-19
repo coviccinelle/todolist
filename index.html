@@ -1,145 +1,216 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimalist Todo-list</title>
+    <title>Todo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .task-item {
-            animation: fadeIn 0.3s ease-in-out;
+        .task-item { animation: fadeIn 0.2s ease-in-out; }
+        .task-complete { text-decoration: line-through; opacity: 0.5; }
+        
+        /* Textbook mode - Japanese notebook style */
+        body.textbook-mode {
+            background-color: #faf6f1;
+            background-image: 
+                linear-gradient(90deg, transparent calc(100% - 14.28%), rgba(211, 47, 47, 0.15) calc(100% - 14.28%), rgba(211, 47, 47, 0.15) calc(100% - 12.28%), transparent calc(100% - 12.28%)),
+                linear-gradient(0deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 100% 25px;
+            font-family: 'Georgia', serif;
         }
-        .task-complete {
-            text-decoration: line-through;
-            opacity: 0.6;
+        body.textbook-mode::before {
+            content: '';
+            position: fixed;
+            right: calc(14.28% - 8px);
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #d32f2f 0%, #d32f2f 100%);
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 2px 0 8px rgba(211, 47, 47, 0.3);
+        }
+        
+        /* Dark mode - True blackish dark */
+        body.dark-mode {
+            background-color: #0f172a !important;
+            color: #e2e8f0;
+        }
+        body.dark-mode .bg-white {
+            background-color: #1e293b !important;
+        }
+        body.dark-mode .text-slate-800 {
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode .text-slate-700 {
+            color: #cbd5e1 !important;
+        }
+        body.dark-mode .text-slate-400 {
+            color: #94a3b8 !important;
+        }
+        body.dark-mode .border-slate-200 {
+            border-color: #334155 !important;
+        }
+        body.dark-mode .border-slate-700 {
+            border-color: #334155 !important;
+        }
+        body.dark-mode .bg-slate-200 {
+            background-color: #334155 !important;
+        }
+        body.dark-mode .bg-slate-700 {
+            background-color: #475569 !important;
+        }
+        body.dark-mode .hover\:bg-slate-100:hover {
+            background-color: #334155 !important;
+        }
+        body.dark-mode .hover\:bg-slate-300:hover {
+            background-color: #475569 !important;
+        }
+        body.dark-mode .hover\:bg-slate-400:hover {
+            background-color: #64748b !important;
+        }
+        body.dark-mode .hover\:bg-slate-600:hover {
+            background-color: #475569 !important;
+        }
+        body.dark-mode .dark-mode\:bg-slate-700 {
+            background-color: #475569 !important;
+        }
+        body.dark-mode .dark-mode\:bg-slate-800 {
+            background-color: #1e293b !important;
+        }
+        body.dark-mode .dark-mode\:text-slate-100 {
+            color: #f1f5f9 !important;
+        }
+        body.dark-mode .dark-mode\:border-slate-700 {
+            border-color: #334155 !important;
+        }
+        body.dark-mode .bg-slate-300 {
+            background-color: #475569 !important;
+        }
+        body.dark-mode .bg-slate-500 {
+            background-color: #64748b !important;
+        }
+        body.dark-mode input {
+            background-color: #334155 !important;
+            color: #e2e8f0 !important;
+            border-color: #475569 !important;
+        }
+        body.dark-mode input::placeholder {
+            color: #94a3b8 !important;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen py-8 px-4">
-    <div class="max-w-2xl mx-auto">
+<body class="min-h-screen py-6 px-4 bg-white text-slate-800 transition-colors duration-300">
+    <div class="max-w-lg mx-auto">
         <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-slate-800 mb-2">📝 Minimalist Todo</h1>
-            <p class="text-slate-600 text-sm">Dữ liệu chỉ tồn tại khi tab mở • Tắt tab là mất dữ liệu</p>
+        <div class="mb-6 flex items-center justify-between">
+            <h1 class="text-2xl font-bold text-slate-800 dark-mode:text-slate-100">Todo</h1>
+            <div class="flex gap-2">
+                <button 
+                    id="themeToggle" 
+                    class="px-3 py-1 text-xs bg-slate-200 dark-mode:bg-slate-700 hover:bg-slate-300 dark-mode:hover:bg-slate-600 text-slate-800 dark-mode:text-slate-100 rounded transition"
+                    title="Toggle theme"
+                >
+                    🌙
+                </button>
+                <button 
+                    id="textbookToggle" 
+                    class="px-3 py-1 text-xs bg-slate-200 dark-mode:bg-slate-700 hover:bg-slate-300 dark-mode:hover:bg-slate-600 text-slate-800 dark-mode:text-slate-100 rounded transition"
+                    title="Textbook mode"
+                >
+                    📖
+                </button>
+            </div>
         </div>
 
-        <!-- Input Section -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <div class="flex gap-2 mb-4">
+        <!-- Input -->
+        <div class="bg-white dark-mode:bg-slate-800 rounded shadow p-3 mb-4">
+            <div class="flex gap-2">
                 <input 
                     type="text" 
                     id="taskInput" 
-                    placeholder="Thêm công việc mới..." 
-                    class="flex-1 px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 transition"
-                    @keyup.enter="addTask"
+                    placeholder="Add task..." 
+                    class="flex-1 px-3 py-2 text-sm border border-slate-200 dark-mode:border-slate-700 dark-mode:bg-slate-700 dark-mode:text-slate-100 rounded focus:outline-none focus:border-blue-500 transition"
+                    autocomplete="off"
                 >
                 <button 
                     id="addBtn" 
-                    class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition transform hover:scale-105 active:scale-95"
+                    class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded transition"
                 >
-                    Thêm
+                    Add
                 </button>
             </div>
-            <p class="text-xs text-slate-500">Nhấn Enter hoặc click nút Thêm để tạo task mới</p>
         </div>
 
-        <!-- Tasks List -->
-        <div id="taskList" class="space-y-3">
-            <!-- Tasks will be rendered here -->
+        <!-- Tasks -->
+        <div id="taskList" class="space-y-2">
+            <!-- Tasks rendered here -->
         </div>
 
-        <!-- Empty State -->
-        <div id="emptyState" class="text-center py-12">
-            <p class="text-slate-400 text-lg">✨ Không có công việc nào</p>
-            <p class="text-slate-500 text-sm mt-1">Thêm một task để bắt đầu nhé!</p>
+        <!-- Empty -->
+        <div id="emptyState" class="text-center py-8">
+            <p class="text-slate-400 text-sm">No tasks yet</p>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark-mode:bg-slate-800 rounded shadow-lg p-6 max-w-sm w-full">
+            <h3 class="text-lg font-bold text-slate-800 dark-mode:text-slate-100 mb-4">Edit task</h3>
+            <input 
+                type="text" 
+                id="editInput" 
+                class="w-full px-3 py-2 text-sm border border-slate-200 dark-mode:border-slate-700 dark-mode:bg-slate-700 dark-mode:text-slate-100 rounded focus:outline-none focus:border-blue-500 mb-4"
+            >
+            <div class="flex gap-2">
+                <button id="saveEditBtn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold py-2 rounded transition">Save</button>
+                <button id="cancelEditBtn" class="flex-1 bg-slate-300 dark-mode:bg-slate-600 hover:bg-slate-400 dark-mode:hover:bg-slate-500 text-slate-800 dark-mode:text-slate-100 text-sm font-semibold py-2 rounded transition">Cancel</button>
+            </div>
         </div>
     </div>
 
     <!-- Color Palette Modal -->
     <div id="colorModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg shadow-2xl p-6 max-w-sm w-full">
-            <h3 class="text-lg font-bold text-slate-800 mb-4">Chọn màu cho task</h3>
-            <div class="grid grid-cols-4 gap-2">
-                <button data-color="bg-red-100" class="w-12 h-12 bg-red-100 rounded-lg hover:ring-2 ring-offset-2 ring-red-400 transition" title="Đỏ"></button>
-                <button data-color="bg-blue-100" class="w-12 h-12 bg-blue-100 rounded-lg hover:ring-2 ring-offset-2 ring-blue-400 transition" title="Xanh dương"></button>
-                <button data-color="bg-green-100" class="w-12 h-12 bg-green-100 rounded-lg hover:ring-2 ring-offset-2 ring-green-400 transition" title="Xanh lá"></button>
-                <button data-color="bg-yellow-100" class="w-12 h-12 bg-yellow-100 rounded-lg hover:ring-2 ring-offset-2 ring-yellow-400 transition" title="Vàng"></button>
-                <button data-color="bg-purple-100" class="w-12 h-12 bg-purple-100 rounded-lg hover:ring-2 ring-offset-2 ring-purple-400 transition" title="Tím"></button>
-                <button data-color="bg-pink-100" class="w-12 h-12 bg-pink-100 rounded-lg hover:ring-2 ring-offset-2 ring-pink-400 transition" title="Hồng"></button>
-                <button data-color="bg-orange-100" class="w-12 h-12 bg-orange-100 rounded-lg hover:ring-2 ring-offset-2 ring-orange-400 transition" title="Cam"></button>
-                <button data-color="bg-cyan-100" class="w-12 h-12 bg-cyan-100 rounded-lg hover:ring-2 ring-offset-2 ring-cyan-400 transition" title="Xanh ngọc"></button>
+        <div class="bg-white dark-mode:bg-slate-800 rounded shadow-lg p-5 max-w-xs w-full">
+            <h3 class="text-sm font-bold text-slate-800 dark-mode:text-slate-100 mb-3">Color</h3>
+            <div class="grid grid-cols-4 gap-2 mb-3">
+                <button data-color="bg-red-100" class="w-10 h-10 bg-red-100 rounded hover:ring-2 ring-offset-2 ring-red-400 transition"></button>
+                <button data-color="bg-blue-100" class="w-10 h-10 bg-blue-100 rounded hover:ring-2 ring-offset-2 ring-blue-400 transition"></button>
+                <button data-color="bg-green-100" class="w-10 h-10 bg-green-100 rounded hover:ring-2 ring-offset-2 ring-green-400 transition"></button>
+                <button data-color="bg-yellow-100" class="w-10 h-10 bg-yellow-100 rounded hover:ring-2 ring-offset-2 ring-yellow-400 transition"></button>
+                <button data-color="bg-purple-100" class="w-10 h-10 bg-purple-100 rounded hover:ring-2 ring-offset-2 ring-purple-400 transition"></button>
+                <button data-color="bg-pink-100" class="w-10 h-10 bg-pink-100 rounded hover:ring-2 ring-offset-2 ring-pink-400 transition"></button>
+                <button data-color="bg-orange-100" class="w-10 h-10 bg-orange-100 rounded hover:ring-2 ring-offset-2 ring-orange-400 transition"></button>
+                <button data-color="bg-cyan-100" class="w-10 h-10 bg-cyan-100 rounded hover:ring-2 ring-offset-2 ring-cyan-400 transition"></button>
             </div>
-            <div class="flex gap-2 mt-6">
-                <button id="randomColorBtn" class="flex-1 bg-slate-500 hover:bg-slate-600 text-white font-semibold py-2 rounded-lg transition">
-                    🎲 Ngẫu nhiên
-                </button>
-                <button id="cancelColorBtn" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 rounded-lg transition">
-                    Đóng
-                </button>
+            <div class="flex gap-2">
+                <button id="randomColorBtn" class="flex-1 bg-slate-500 hover:bg-slate-600 text-white text-sm font-semibold py-1 rounded transition">Random</button>
+                <button id="cancelColorBtn" class="flex-1 bg-slate-300 hover:bg-slate-400 text-slate-800 text-sm font-semibold py-1 rounded transition">Close</button>
             </div>
         </div>
     </div>
 
     <script type="module">
-        // ==================== Types & Interfaces ====================
-        /**
-         * @typedef {Object} Task
-         * @property {string} id - Unique identifier
-         * @property {string} title - Task title
-         * @property {boolean} completed - Completion status
-         * @property {string} color - Background color class
-         */
-
-        // ==================== State Management ====================
         class TodoManager {
             constructor() {
-                /** @type {Task[]} */
                 this.tasks = [];
-                /** @type {string|null} */
                 this.selectedTaskId = null;
-                this.colors = [
-                    'bg-red-100',
-                    'bg-blue-100',
-                    'bg-green-100',
-                    'bg-yellow-100',
-                    'bg-purple-100',
-                    'bg-pink-100',
-                    'bg-orange-100',
-                    'bg-cyan-100'
-                ];
+                this.editingTaskId = null;
+                this.colors = ['bg-red-100', 'bg-blue-100', 'bg-green-100', 'bg-yellow-100', 'bg-purple-100', 'bg-pink-100', 'bg-orange-100', 'bg-cyan-100'];
             }
 
-            /**
-             * Generate unique ID
-             * @returns {string}
-             */
             generateId() {
                 return Date.now().toString(36) + Math.random().toString(36).substr(2);
             }
 
-            /**
-             * Get random color
-             * @returns {string}
-             */
             getRandomColor() {
                 return this.colors[Math.floor(Math.random() * this.colors.length)];
             }
 
-            /**
-             * Add new task
-             * @param {string} title
-             * @returns {Task}
-             */
             addTask(title) {
                 const task = {
                     id: this.generateId(),
@@ -151,47 +222,37 @@
                 return task;
             }
 
-            /**
-             * Remove task
-             * @param {string} taskId
-             */
             removeTask(taskId) {
                 this.tasks = this.tasks.filter(task => task.id !== taskId);
             }
 
-            /**
-             * Toggle task completion
-             * @param {string} taskId
-             */
             toggleTask(taskId) {
                 const task = this.tasks.find(t => t.id === taskId);
-                if (task) {
-                    task.completed = !task.completed;
-                }
+                if (task) task.completed = !task.completed;
             }
 
-            /**
-             * Update task color
-             * @param {string} taskId
-             * @param {string} color
-             */
             updateTaskColor(taskId, color) {
                 const task = this.tasks.find(t => t.id === taskId);
-                if (task) {
-                    task.color = color;
-                }
+                if (task) task.color = color;
             }
 
-            /**
-             * Get all tasks
-             * @returns {Task[]}
-             */
+            updateTask(taskId, title) {
+                const task = this.tasks.find(t => t.id === taskId);
+                if (task) task.title = title.trim();
+            }
+
+            getSortedTasks() {
+                return [...this.tasks].sort((a, b) => {
+                    if (a.completed === b.completed) return 0;
+                    return a.completed ? 1 : -1;
+                });
+            }
+
             getTasks() {
                 return this.tasks;
             }
         }
 
-        // ==================== UI Manager ====================
         class UIManager {
             constructor(todoManager) {
                 this.todo = todoManager;
@@ -200,39 +261,45 @@
                 this.taskList = document.getElementById('taskList');
                 this.emptyState = document.getElementById('emptyState');
                 this.colorModal = document.getElementById('colorModal');
-                this.colorButtons = Array.from(document.querySelectorAll('#colorModal [data-color]'));
-                this.randomColorBtn = document.getElementById('randomColorBtn');
-                this.cancelColorBtn = document.getElementById('cancelColorBtn');
+                this.editModal = document.getElementById('editModal');
+                this.editInput = document.getElementById('editInput');
+                this.themeToggle = document.getElementById('themeToggle');
+                this.textbookToggle = document.getElementById('textbookToggle');
 
                 this.attachEventListeners();
+                this.loadTheme();
             }
 
             attachEventListeners() {
                 this.addBtn.addEventListener('click', () => this.handleAddTask());
                 this.taskInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.handleAddTask();
-                    }
+                    if (e.key === 'Enter') this.handleAddTask();
                 });
 
-                // Color palette buttons
-                this.colorButtons.forEach(btn => {
+                this.themeToggle.addEventListener('click', () => this.toggleDarkMode());
+                this.textbookToggle.addEventListener('click', () => this.toggleTextbookMode());
+
+                document.querySelectorAll('#colorModal [data-color]').forEach(btn => {
                     btn.addEventListener('click', () => {
-                        const color = btn.dataset.color;
-                        this.todo.updateTaskColor(this.todo.selectedTaskId, color);
+                        this.todo.updateTaskColor(this.todo.selectedTaskId, btn.dataset.color);
                         this.closeColorModal();
                         this.render();
                     });
                 });
 
-                this.randomColorBtn.addEventListener('click', () => {
-                    const randomColor = this.todo.getRandomColor();
-                    this.todo.updateTaskColor(this.todo.selectedTaskId, randomColor);
+                document.getElementById('randomColorBtn').addEventListener('click', () => {
+                    this.todo.updateTaskColor(this.todo.selectedTaskId, this.todo.getRandomColor());
                     this.closeColorModal();
                     this.render();
                 });
 
-                this.cancelColorBtn.addEventListener('click', () => this.closeColorModal());
+                document.getElementById('cancelColorBtn').addEventListener('click', () => this.closeColorModal());
+
+                document.getElementById('saveEditBtn').addEventListener('click', () => this.saveEdit());
+                document.getElementById('cancelEditBtn').addEventListener('click', () => this.closeEditModal());
+                this.editInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.saveEdit();
+                });
             }
 
             handleAddTask() {
@@ -252,14 +319,51 @@
 
             closeColorModal() {
                 this.colorModal.classList.add('hidden');
-                this.todo.selectedTaskId = null;
             }
 
-            /**
-             * Render all tasks
-             */
+            openEditModal(taskId) {
+                const task = this.todo.tasks.find(t => t.id === taskId);
+                if (task) {
+                    this.todo.editingTaskId = taskId;
+                    this.editInput.value = task.title;
+                    this.editModal.classList.remove('hidden');
+                    setTimeout(() => this.editInput.focus(), 0);
+                }
+            }
+
+            closeEditModal() {
+                this.editModal.classList.add('hidden');
+                this.todo.editingTaskId = null;
+            }
+
+            saveEdit() {
+                const title = this.editInput.value;
+                if (title.trim()) {
+                    this.todo.updateTask(this.todo.editingTaskId, title);
+                    this.closeEditModal();
+                    this.render();
+                }
+            }
+
+            toggleDarkMode() {
+                document.body.classList.toggle('dark-mode');
+                localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+            }
+
+            toggleTextbookMode() {
+                document.body.classList.toggle('textbook-mode');
+                localStorage.setItem('textbookMode', document.body.classList.contains('textbook-mode') ? 'true' : 'false');
+            }
+
+            loadTheme() {
+                const theme = localStorage.getItem('theme');
+                const textbook = localStorage.getItem('textbookMode');
+                if (theme === 'dark') document.body.classList.add('dark-mode');
+                if (textbook === 'true') document.body.classList.add('textbook-mode');
+            }
+
             render() {
-                const tasks = this.todo.getTasks();
+                const tasks = this.todo.getSortedTasks();
                 
                 if (tasks.length === 0) {
                     this.taskList.innerHTML = '';
@@ -268,49 +372,35 @@
                 }
 
                 this.emptyState.classList.add('hidden');
-                this.taskList.innerHTML = tasks
-                    .map(task => this.createTaskElement(task))
-                    .join('');
-
+                this.taskList.innerHTML = tasks.map(task => this.createTaskElement(task)).join('');
                 this.attachTaskEventListeners();
             }
 
-            /**
-             * Create task element HTML
-             * @param {Task} task
-             * @returns {string}
-             */
             createTaskElement(task) {
                 return `
-                    <div class="task-item ${task.color} rounded-lg shadow-md p-4 transition hover:shadow-lg flex items-center gap-3 group">
-                        <!-- Complete Button -->
+                    <div class="task-item ${task.color} rounded shadow p-3 flex items-center gap-2 group hover:shadow-md transition">
                         <button 
-                            class="complete-btn flex-shrink-0 w-6 h-6 rounded-full border-2 border-slate-400 hover:border-slate-600 transition flex items-center justify-center ${task.completed ? 'bg-slate-600 border-slate-600' : 'hover:bg-slate-100'}"
+                            class="complete-btn flex-shrink-0 w-5 h-5 rounded border border-slate-400 hover:border-slate-600 transition flex items-center justify-center text-xs ${task.completed ? 'bg-slate-600 border-slate-600' : 'hover:bg-slate-100'}"
                             data-id="${task.id}"
-                            title="Đánh dấu hoàn thành"
                         >
-                            ${task.completed ? '<span class="text-white text-sm">✓</span>' : ''}
+                            ${task.completed ? '✓' : ''}
                         </button>
-
-                        <!-- Task Title -->
-                        <span class="task-title flex-1 text-slate-800 font-medium text-lg ${task.completed ? 'task-complete' : ''}">
+                        <span 
+                            class="task-title flex-1 text-slate-800 text-sm ${task.completed ? 'task-complete' : ''}"
+                            data-id="${task.id}"
+                            style="cursor: pointer;"
+                        >
                             ${this.escapeHtml(task.title)}
                         </span>
-
-                        <!-- Color Picker Button -->
                         <button 
-                            class="color-btn flex-shrink-0 px-3 py-2 bg-white bg-opacity-60 hover:bg-opacity-100 rounded-lg text-sm font-semibold text-slate-700 opacity-0 group-hover:opacity-100 transition"
+                            class="color-btn flex-shrink-0 px-2 py-1 bg-white bg-opacity-60 hover:bg-opacity-100 rounded text-xs opacity-0 group-hover:opacity-100 transition"
                             data-id="${task.id}"
-                            title="Đổi màu"
                         >
                             🎨
                         </button>
-
-                        <!-- Delete Button -->
                         <button 
-                            class="delete-btn flex-shrink-0 px-3 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg font-semibold opacity-0 group-hover:opacity-100 transition"
+                            class="delete-btn flex-shrink-0 px-2 py-1 bg-red-100 hover:bg-red-200 text-red-600 rounded text-xs opacity-0 group-hover:opacity-100 transition"
                             data-id="${task.id}"
-                            title="Xóa task"
                         >
                             ✕
                         </button>
@@ -319,56 +409,42 @@
             }
 
             attachTaskEventListeners() {
-                // Complete buttons
                 document.querySelectorAll('.complete-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        const taskId = e.currentTarget.dataset.id;
-                        this.todo.toggleTask(taskId);
+                        this.todo.toggleTask(e.currentTarget.dataset.id);
                         this.render();
                     });
                 });
 
-                // Delete buttons
                 document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        const taskId = e.currentTarget.dataset.id;
-                        this.todo.removeTask(taskId);
+                        this.todo.removeTask(e.currentTarget.dataset.id);
                         this.render();
                     });
                 });
 
-                // Color picker buttons
                 document.querySelectorAll('.color-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        const taskId = e.currentTarget.dataset.id;
-                        this.openColorModal(taskId);
+                        this.openColorModal(e.currentTarget.dataset.id);
+                    });
+                });
+
+                document.querySelectorAll('.task-title').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        this.openEditModal(e.currentTarget.dataset.id);
                     });
                 });
             }
 
-            /**
-             * Escape HTML special characters
-             * @param {string} text
-             * @returns {string}
-             */
             escapeHtml(text) {
-                const map = {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#039;'
-                };
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
                 return text.replace(/[&<>"']/g, m => map[m]);
             }
         }
 
-        // ==================== Initialize App ====================
         const todoManager = new TodoManager();
         const uiManager = new UIManager(todoManager);
         uiManager.render();
-
-        // Focus input on load
         document.getElementById('taskInput').focus();
     </script>
 </body>
