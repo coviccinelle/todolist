@@ -14,15 +14,20 @@
         .task-item { animation: fadeIn 0.2s ease-in-out; }
         .task-complete { text-decoration: line-through; opacity: 0.5; }
         
-        /* Burn animation */
+        /* Burn animation with fire effect */
         @keyframes burn {
             0% {
-                transform: translateY(0) translateX(0) rotate(0deg);
+                transform: translateY(0) translateX(0) rotate(0deg) scale(1);
                 opacity: 1;
+                filter: brightness(1.2) glow(2px);
+            }
+            50% {
+                filter: brightness(1.5) glow(4px);
             }
             100% {
-                transform: translateY(-100vh) translateX(var(--tx)) rotate(var(--rot));
+                transform: translateY(-120vh) translateX(var(--tx)) rotate(var(--rot)) scale(0.2);
                 opacity: 0;
+                filter: brightness(0.5) glow(0px);
             }
         }
         @keyframes fadeOutScale {
@@ -38,7 +43,8 @@
         .ash-particle {
             position: fixed;
             pointer-events: none;
-            animation: burn 3s ease-out forwards;
+            animation: burn 3.5s ease-out forwards;
+            box-shadow: 0 0 10px currentColor;
         }
         
         /* Textbook mode - Japanese notebook style */
@@ -160,30 +166,30 @@
             border-color: #fcd34d !important;
         }
         
-        /* Dark mode task colors - darken pastels for readability */
+        /* Dark mode task colors - earthy pastel tones */
         body.dark-mode .bg-red-100 {
-            background-color: #7f1d1d !important;
+            background-color: #a9635a !important;
         }
         body.dark-mode .bg-blue-100 {
-            background-color: #1e3a8a !important;
+            background-color: #5a7580 !important;
         }
         body.dark-mode .bg-green-100 {
-            background-color: #15803d !important;
+            background-color: #6b8e5d !important;
         }
         body.dark-mode .bg-yellow-100 {
-            background-color: #713f12 !important;
+            background-color: #8b6e47 !important;
         }
         body.dark-mode .bg-purple-100 {
-            background-color: #5b21b6 !important;
+            background-color: #7a5a7a !important;
         }
         body.dark-mode .bg-pink-100 {
-            background-color: #831843 !important;
+            background-color: #a8737a !important;
         }
         body.dark-mode .bg-orange-100 {
-            background-color: #7c2d12 !important;
+            background-color: #9b6b4d !important;
         }
         body.dark-mode .bg-cyan-100 {
-            background-color: #0e5f6f !important;
+            background-color: #5a7a7d !important;
         }
     </style>
 </head>
@@ -579,26 +585,41 @@
                 this.burnBtn.disabled = true;
                 this.burnOverlay.classList.remove('hidden');
                 
-                // Create ash and fire particles
+                // Create much more fire and ash particles with enhanced fire colors
                 const container = document.getElementById('ashContainer');
-                const particleCount = 80;
+                const particleCount = 120;
                 
                 for (let i = 0; i < particleCount; i++) {
                     const particle = document.createElement('div');
                     particle.className = 'ash-particle';
                     
-                    const size = Math.random() * 25 + 3;
+                    const size = Math.random() * 35 + 2;
                     const startX = Math.random() * window.innerWidth;
-                    const startY = Math.random() * window.innerHeight;
-                    const tx = (Math.random() - 0.5) * 250;
+                    const startY = window.innerHeight * 0.5 + Math.random() * 200 - 100; // Center vertically
+                    const tx = (Math.random() - 0.5) * 300;
                     const rot = Math.random() * 360;
-                    const duration = Math.random() * 2 + 2.5;
+                    const duration = Math.random() * 1.5 + 2.5;
                     
-                    // Mix of ash gray and fire orange
-                    const isFirey = Math.random() > 0.6;
-                    const color = isFirey 
-                        ? `rgba(${255 - Math.random() * 100}, ${Math.random() * 150}, 0, ${Math.random() * 0.6 + 0.3})`
-                        : `rgba(${100 + Math.random() * 100}, ${100 + Math.random() * 100}, ${100 + Math.random() * 100}, ${Math.random() * 0.7 + 0.3})`;
+                    // More fire colors: bright reds, oranges, yellows, and some gray ash
+                    let color;
+                    const rand = Math.random();
+                    if (rand < 0.4) {
+                        // Fire colors (red/orange/yellow)
+                        const r = 255;
+                        const g = Math.random() * 180;
+                        const b = Math.random() * 50;
+                        color = `rgba(${r}, ${g}, ${b}, ${Math.random() * 0.8 + 0.2})`;
+                    } else if (rand < 0.75) {
+                        // Orange to yellow
+                        const r = Math.random() * 100 + 200;
+                        const g = Math.random() * 150 + 100;
+                        const b = Math.random() * 20;
+                        color = `rgba(${r}, ${g}, ${b}, ${Math.random() * 0.65 + 0.25})`;
+                    } else {
+                        // Gray ash
+                        const gray = Math.random() * 100 + 80;
+                        color = `rgba(${gray}, ${gray}, ${gray}, ${Math.random() * 0.6 + 0.3})`;
+                    }
                     
                     particle.style.left = startX + 'px';
                     particle.style.top = startY + 'px';
@@ -616,26 +637,37 @@
                 // Fade out content and show burn effect
                 setTimeout(() => {
                     document.body.style.opacity = '0';
-                    document.body.style.transition = 'opacity 2s ease-out';
+                    document.body.style.transition = 'opacity 1s ease-out';
                     
                     setTimeout(() => {
-                        // Clear everything
-                        this.taskList.innerHTML = '';
-                        this.emptyState.classList.remove('hidden');
-                        this.emptyState.innerHTML = '<p class="text-slate-400 text-sm">✨ Everything is ashes now</p>';
-                        this.burnContainer.classList.add('hidden');
-                        this.burnOverlay.classList.add('hidden');
-                        document.body.style.opacity = '1';
-                        document.body.style.transition = 'none';
-                        this.todo.tasks = [];
-                        container.innerHTML = '';
+                        // 3 second blank screen
+                        document.body.style.opacity = '0';
                         
-                        // Allow burning again after 7 seconds
                         setTimeout(() => {
-                            this.isBurning = false;
-                            this.burnBtn.disabled = false;
-                        }, 7000);
-                    }, 2000);
+                            // Fade back in with ashes message
+                            document.body.style.transition = 'opacity 2s ease-in';
+                            
+                            // Clear everything
+                            this.taskList.innerHTML = '';
+                            this.emptyState.classList.remove('hidden');
+                            this.emptyState.innerHTML = '<p class="text-slate-400 text-sm">✨ Everything is ashes now</p>';
+                            this.burnContainer.classList.add('hidden');
+                            this.burnOverlay.classList.add('hidden');
+                            document.body.style.opacity = '1';
+                            this.todo.tasks = [];
+                            container.innerHTML = '';
+                            
+                            setTimeout(() => {
+                                document.body.style.transition = 'none';
+                                
+                                // Allow burning again after 7 seconds
+                                setTimeout(() => {
+                                    this.isBurning = false;
+                                    this.burnBtn.disabled = false;
+                                }, 7000);
+                            }, 2000);
+                        }, 3000); // 3 second blank
+                    }, 1000); // fade out
                 }, 800);
             }
         }
