@@ -159,12 +159,38 @@
         body.dark-mode .border-yellow-800 {
             border-color: #fcd34d !important;
         }
+        
+        /* Dark mode task colors - darken pastels for readability */
+        body.dark-mode .bg-red-100 {
+            background-color: #7f1d1d !important;
+        }
+        body.dark-mode .bg-blue-100 {
+            background-color: #1e3a8a !important;
+        }
+        body.dark-mode .bg-green-100 {
+            background-color: #15803d !important;
+        }
+        body.dark-mode .bg-yellow-100 {
+            background-color: #713f12 !important;
+        }
+        body.dark-mode .bg-purple-100 {
+            background-color: #5b21b6 !important;
+        }
+        body.dark-mode .bg-pink-100 {
+            background-color: #831843 !important;
+        }
+        body.dark-mode .bg-orange-100 {
+            background-color: #7c2d12 !important;
+        }
+        body.dark-mode .bg-cyan-100 {
+            background-color: #0e5f6f !important;
+        }
     </style>
 </head>
 <body class="min-h-screen px-4 bg-white text-slate-800 transition-colors duration-300">
     <!-- Top Left: Title -->
     <div class="fixed top-6 left-6 z-40">
-        <h1 class="text-4xl font-bold text-slate-800 dark-mode:text-slate-100" style="font-family: 'Henny Penny', cursive;">Todo</h1>
+        <h1 class="text-4xl font-bold text-slate-800 dark-mode:text-slate-100" style="font-family: 'Henny Penny', cursive;">just do list</h1>
     </div>
 
     <!-- Top Right: Theme Buttons -->
@@ -229,7 +255,7 @@
     </div>
 
     <!-- Bottom Disclaimer -->
-    <div id="disclaimer" class="fixed bottom-6 left-6 right-6 max-w-sm p-3 bg-yellow-50 dark-mode:bg-yellow-950 border border-yellow-200 dark-mode:border-yellow-800 rounded text-xs text-yellow-800 dark-mode:text-yellow-200 shadow-lg z-40 flex items-center justify-between">
+    <div id="disclaimer" class="fixed bottom-6 left-6 right-6 max-w-sm p-3 bg-yellow-50 dark-mode:bg-yellow-950 border border-yellow-200 dark-mode:border-yellow-800 rounded text-xs text-yellow-800 dark-mode:text-yellow-200 shadow-lg z-40 flex items-center justify-between" style="font-family: system-ui, -apple-system, sans-serif;">
         <span>⚠️ Ephemeral todo - closing tab = data lost</span>
         <button id="closeDisclaimer" class="ml-2 text-yellow-600 dark-mode:text-yellow-400 hover:text-yellow-800 dark-mode:hover:text-yellow-200 font-bold">✕</button>
     </div>
@@ -357,7 +383,7 @@
                 this.burnOverlay = document.getElementById('burnOverlay');
                 this.disclaimer = document.getElementById('disclaimer');
                 this.closeDisclaimerBtn = document.getElementById('closeDisclaimer');
-                this.isBurned = false;
+                this.isBurning = false;
 
                 this.attachEventListeners();
                 this.loadTheme();
@@ -547,32 +573,38 @@
             }
 
             burnIt() {
-                // Prevent multiple burns
-                if (this.isBurned) return;
-                this.isBurned = true;
+                // Prevent overlapping burns
+                if (this.isBurning) return;
+                this.isBurning = true;
                 this.burnBtn.disabled = true;
                 this.burnOverlay.classList.remove('hidden');
                 
-                // Create ash particles
+                // Create ash and fire particles
                 const container = document.getElementById('ashContainer');
-                const particleCount = 50;
+                const particleCount = 80;
                 
                 for (let i = 0; i < particleCount; i++) {
                     const particle = document.createElement('div');
                     particle.className = 'ash-particle';
                     
-                    const size = Math.random() * 20 + 5;
+                    const size = Math.random() * 25 + 3;
                     const startX = Math.random() * window.innerWidth;
                     const startY = Math.random() * window.innerHeight;
-                    const tx = (Math.random() - 0.5) * 200;
+                    const tx = (Math.random() - 0.5) * 250;
                     const rot = Math.random() * 360;
-                    const duration = Math.random() * 1.5 + 2;
+                    const duration = Math.random() * 2 + 2.5;
+                    
+                    // Mix of ash gray and fire orange
+                    const isFirey = Math.random() > 0.6;
+                    const color = isFirey 
+                        ? `rgba(${255 - Math.random() * 100}, ${Math.random() * 150}, 0, ${Math.random() * 0.6 + 0.3})`
+                        : `rgba(${100 + Math.random() * 100}, ${100 + Math.random() * 100}, ${100 + Math.random() * 100}, ${Math.random() * 0.7 + 0.3})`;
                     
                     particle.style.left = startX + 'px';
                     particle.style.top = startY + 'px';
                     particle.style.width = size + 'px';
                     particle.style.height = size + 'px';
-                    particle.style.background = `rgba(120, 120, 120, ${Math.random() * 0.8 + 0.2})`;
+                    particle.style.background = color;
                     particle.style.borderRadius = '50%';
                     particle.style.setProperty('--tx', tx + 'px');
                     particle.style.setProperty('--rot', rot + 'deg');
@@ -597,7 +629,12 @@
                         document.body.style.transition = 'none';
                         this.todo.tasks = [];
                         container.innerHTML = '';
-                        this.isBurned = true; // Keep the burned state
+                        
+                        // Allow burning again after 7 seconds
+                        setTimeout(() => {
+                            this.isBurning = false;
+                            this.burnBtn.disabled = false;
+                        }, 7000);
                     }, 2000);
                 }, 800);
             }
