@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimalist Todo-list</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .task-item {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .task-complete {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen py-8 px-4">
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-slate-800 mb-2">📝 Minimalist Todo</h1>
+            <p class="text-slate-600 text-sm">Dữ liệu chỉ tồn tại khi tab mở • Tắt tab là mất dữ liệu</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex gap-2 mb-4">
+                <input 
+                    type="text" 
+                    id="taskInput" 
+                    placeholder="Thêm công việc mới..." 
+                    class="flex-1 px-4 py-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 transition"
+                    @keyup.enter="addTask"
+                >
+                <button 
+                    id="addBtn" 
+                    class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition transform hover:scale-105 active:scale-95"
+                >
+                    Thêm
+                </button>
+            </div>
+            <p class="text-xs text-slate-500">Nhấn Enter hoặc click nút Thêm để tạo task mới</p>
+        </div>
+
+        <!-- Tasks List -->
+        <div id="taskList" class="space-y-3">
+            <!-- Tasks will be rendered here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="text-center py-12">
+            <p class="text-slate-400 text-lg">✨ Không có công việc nào</p>
+            <p class="text-slate-500 text-sm mt-1">Thêm một task để bắt đầu nhé!</p>
+        </div>
+    </div>
+
+    <!-- Color Palette Modal -->
+    <div id="colorModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-2xl p-6 max-w-sm w-full">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Chọn màu cho task</h3>
+            <div class="grid grid-cols-4 gap-2">
+                <button data-color="bg-red-100" class="w-12 h-12 bg-red-100 rounded-lg hover:ring-2 ring-offset-2 ring-red-400 transition" title="Đỏ"></button>
+                <button data-color="bg-blue-100" class="w-12 h-12 bg-blue-100 rounded-lg hover:ring-2 ring-offset-2 ring-blue-400 transition" title="Xanh dương"></button>
+                <button data-color="bg-green-100" class="w-12 h-12 bg-green-100 rounded-lg hover:ring-2 ring-offset-2 ring-green-400 transition" title="Xanh lá"></button>
+                <button data-color="bg-yellow-100" class="w-12 h-12 bg-yellow-100 rounded-lg hover:ring-2 ring-offset-2 ring-yellow-400 transition" title="Vàng"></button>
+                <button data-color="bg-purple-100" class="w-12 h-12 bg-purple-100 rounded-lg hover:ring-2 ring-offset-2 ring-purple-400 transition" title="Tím"></button>
+                <button data-color="bg-pink-100" class="w-12 h-12 bg-pink-100 rounded-lg hover:ring-2 ring-offset-2 ring-pink-400 transition" title="Hồng"></button>
+                <button data-color="bg-orange-100" class="w-12 h-12 bg-orange-100 rounded-lg hover:ring-2 ring-offset-2 ring-orange-400 transition" title="Cam"></button>
+                <button data-color="bg-cyan-100" class="w-12 h-12 bg-cyan-100 rounded-lg hover:ring-2 ring-offset-2 ring-cyan-400 transition" title="Xanh ngọc"></button>
+            </div>
+            <div class="flex gap-2 mt-6">
+                <button id="randomColorBtn" class="flex-1 bg-slate-500 hover:bg-slate-600 text-white font-semibold py-2 rounded-lg transition">
+                    🎲 Ngẫu nhiên
+                </button>
+                <button id="cancelColorBtn" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 rounded-lg transition">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // ==================== Types & Interfaces ====================
+        /**
+         * @typedef {Object} Task
+         * @property {string} id - Unique identifier
+         * @property {string} title - Task title
+         * @property {boolean} completed - Completion status
+         * @property {string} color - Background color class
+         */
+
+        // ==================== State Management ====================
+        class TodoManager {
+            constructor() {
+                /** @type {Task[]} */
+                this.tasks = [];
+                /** @type {string|null} */
+                this.selectedTaskId = null;
+                this.colors = [
+                    'bg-red-100',
+                    'bg-blue-100',
+                    'bg-green-100',
+                    'bg-yellow-100',
+                    'bg-purple-100',
+                    'bg-pink-100',
+                    'bg-orange-100',
+                    'bg-cyan-100'
+                ];
+            }
+
+            /**
+             * Generate unique ID
+             * @returns {string}
+             */
+            generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            }
+
+            /**
+             * Get random color
+             * @returns {string}
+             */
+            getRandomColor() {
+                return this.colors[Math.floor(Math.random() * this.colors.length)];
+            }
+
+            /**
+             * Add new task
+             * @param {string} title
+             * @returns {Task}
+             */
+            addTask(title) {
+                const task = {
+                    id: this.generateId(),
+                    title: title.trim(),
+                    completed: false,
+                    color: this.getRandomColor()
+                };
+                this.tasks.unshift(task);
+                return task;
+            }
+
+            /**
+             * Remove task
+             * @param {string} taskId
+             */
+            removeTask(taskId) {
+                this.tasks = this.tasks.filter(task => task.id !== taskId);
+            }
+
+            /**
+             * Toggle task completion
+             * @param {string} taskId
+             */
+            toggleTask(taskId) {
+                const task = this.tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.completed = !task.completed;
+                }
+            }
+
+            /**
+             * Update task color
+             * @param {string} taskId
+             * @param {string} color
+             */
+            updateTaskColor(taskId, color) {
+                const task = this.tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.color = color;
+                }
+            }
+
+            /**
+             * Get all tasks
+             * @returns {Task[]}
+             */
+            getTasks() {
+                return this.tasks;
+            }
+        }
+
+        // ==================== UI Manager ====================
+        class UIManager {
+            constructor(todoManager) {
+                this.todo = todoManager;
+                this.taskInput = document.getElementById('taskInput');
+                this.addBtn = document.getElementById('addBtn');
+                this.taskList = document.getElementById('taskList');
+                this.emptyState = document.getElementById('emptyState');
+                this.colorModal = document.getElementById('colorModal');
+                this.colorButtons = Array.from(document.querySelectorAll('#colorModal [data-color]'));
+                this.randomColorBtn = document.getElementById('randomColorBtn');
+                this.cancelColorBtn = document.getElementById('cancelColorBtn');
+
+                this.attachEventListeners();
+            }
+
+            attachEventListeners() {
+                this.addBtn.addEventListener('click', () => this.handleAddTask());
+                this.taskInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.handleAddTask();
+                    }
+                });
+
+                // Color palette buttons
+                this.colorButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const color = btn.dataset.color;
+                        this.todo.updateTaskColor(this.todo.selectedTaskId, color);
+                        this.closeColorModal();
+                        this.render();
+                    });
+                });
+
+                this.randomColorBtn.addEventListener('click', () => {
+                    const randomColor = this.todo.getRandomColor();
+                    this.todo.updateTaskColor(this.todo.selectedTaskId, randomColor);
+                    this.closeColorModal();
+                    this.render();
+                });
+
+                this.cancelColorBtn.addEventListener('click', () => this.closeColorModal());
+            }
+
+            handleAddTask() {
+                const title = this.taskInput.value;
+                if (title.trim()) {
+                    this.todo.addTask(title);
+                    this.taskInput.value = '';
+                    this.taskInput.focus();
+                    this.render();
+                }
+            }
+
+            openColorModal(taskId) {
+                this.todo.selectedTaskId = taskId;
+                this.colorModal.classList.remove('hidden');
+            }
+
+            closeColorModal() {
+                this.colorModal.classList.add('hidden');
+                this.todo.selectedTaskId = null;
+            }
+
+            /**
+             * Render all tasks
+             */
+            render() {
+                const tasks = this.todo.getTasks();
+                
+                if (tasks.length === 0) {
+                    this.taskList.innerHTML = '';
+                    this.emptyState.classList.remove('hidden');
+                    return;
+                }
+
+                this.emptyState.classList.add('hidden');
+                this.taskList.innerHTML = tasks
+                    .map(task => this.createTaskElement(task))
+                    .join('');
+
+                this.attachTaskEventListeners();
+            }
+
+            /**
+             * Create task element HTML
+             * @param {Task} task
+             * @returns {string}
+             */
+            createTaskElement(task) {
+                return `
+                    <div class="task-item ${task.color} rounded-lg shadow-md p-4 transition hover:shadow-lg flex items-center gap-3 group">
+                        <!-- Complete Button -->
+                        <button 
+                            class="complete-btn flex-shrink-0 w-6 h-6 rounded-full border-2 border-slate-400 hover:border-slate-600 transition flex items-center justify-center ${task.completed ? 'bg-slate-600 border-slate-600' : 'hover:bg-slate-100'}"
+                            data-id="${task.id}"
+                            title="Đánh dấu hoàn thành"
+                        >
+                            ${task.completed ? '<span class="text-white text-sm">✓</span>' : ''}
+                        </button>
+
+                        <!-- Task Title -->
+                        <span class="task-title flex-1 text-slate-800 font-medium text-lg ${task.completed ? 'task-complete' : ''}">
+                            ${this.escapeHtml(task.title)}
+                        </span>
+
+                        <!-- Color Picker Button -->
+                        <button 
+                            class="color-btn flex-shrink-0 px-3 py-2 bg-white bg-opacity-60 hover:bg-opacity-100 rounded-lg text-sm font-semibold text-slate-700 opacity-0 group-hover:opacity-100 transition"
+                            data-id="${task.id}"
+                            title="Đổi màu"
+                        >
+                            🎨
+                        </button>
+
+                        <!-- Delete Button -->
+                        <button 
+                            class="delete-btn flex-shrink-0 px-3 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg font-semibold opacity-0 group-hover:opacity-100 transition"
+                            data-id="${task.id}"
+                            title="Xóa task"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                `;
+            }
+
+            attachTaskEventListeners() {
+                // Complete buttons
+                document.querySelectorAll('.complete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const taskId = e.currentTarget.dataset.id;
+                        this.todo.toggleTask(taskId);
+                        this.render();
+                    });
+                });
+
+                // Delete buttons
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const taskId = e.currentTarget.dataset.id;
+                        this.todo.removeTask(taskId);
+                        this.render();
+                    });
+                });
+
+                // Color picker buttons
+                document.querySelectorAll('.color-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const taskId = e.currentTarget.dataset.id;
+                        this.openColorModal(taskId);
+                    });
+                });
+            }
+
+            /**
+             * Escape HTML special characters
+             * @param {string} text
+             * @returns {string}
+             */
+            escapeHtml(text) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, m => map[m]);
+            }
+        }
+
+        // ==================== Initialize App ====================
+        const todoManager = new TodoManager();
+        const uiManager = new UIManager(todoManager);
+        uiManager.render();
+
+        // Focus input on load
+        document.getElementById('taskInput').focus();
+    </script>
+</body>
+</html>
