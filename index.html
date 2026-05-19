@@ -17,7 +17,7 @@
         body.textbook-mode {
             background-color: #faf6f1;
             background-image: 
-                linear-gradient(90deg, transparent calc(100% - 14.28%), rgba(211, 47, 47, 0.15) calc(100% - 14.28%), rgba(211, 47, 47, 0.15) calc(100% - 12.28%), transparent calc(100% - 12.28%)),
+                linear-gradient(90deg, transparent 14.28%, rgba(244, 163, 163, 0.15) 14.28%, rgba(244, 163, 163, 0.15) 16.28%, transparent 16.28%),
                 linear-gradient(0deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
             background-size: 100% 25px;
             font-family: 'Georgia', serif;
@@ -25,14 +25,14 @@
         body.textbook-mode::before {
             content: '';
             position: fixed;
-            right: calc(14.28% - 8px);
+            left: 14.28%;
             top: 0;
             bottom: 0;
             width: 4px;
-            background: linear-gradient(to bottom, #d32f2f 0%, #d32f2f 100%);
+            background: #f5a5a5;
             pointer-events: none;
             z-index: 10;
-            box-shadow: 2px 0 8px rgba(211, 47, 47, 0.3);
+            box-shadow: 2px 0 8px rgba(244, 163, 163, 0.3);
         }
         
         /* Dark mode - True blackish dark */
