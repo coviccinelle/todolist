@@ -2,6 +2,8 @@
 no pen and paper? it's ok
 Your brain isn't a storage device. Write things down to unload them, see them clearly, and stop the mental charge of "what if I forget something?"
 
+![til](https://github.com/coviccinelle/todolist/blob/main/todolist_gif.gif)
+
 When you close the tab, it's gone. Not stored somewhere haunting you. Not logged. Not tracked. Just gone.
 
 And that's liberating.
